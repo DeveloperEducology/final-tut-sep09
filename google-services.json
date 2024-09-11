@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "206120677155",
+    "project_id": "final-tut-sep09",
+    "storage_bucket": "final-tut-sep09.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:206120677155:android:9d6de02a0bf574b8f56696",
+        "android_client_info": {
+          "package_name": "com.vijaymarka.finaltutsep09"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCdJG-y9uUqsNmF42P_62MGSP0MVDSolPQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

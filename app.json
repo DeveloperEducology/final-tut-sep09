@@ -15,13 +15,20 @@
       "supportsTablet": true
     },
     "android": {
+        "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.vijaymarka.finaltutsep09"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "43b23be5-5955-403f-9772-8b2c2dc9a94c"
+      }
     }
   }
 }

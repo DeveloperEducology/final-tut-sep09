@@ -33,3 +33,8 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+
+#git remote add origin https://github.com/DeveloperEducology/final-tut-sep09.git
+#git branch -M main
+#git push -u origin main
