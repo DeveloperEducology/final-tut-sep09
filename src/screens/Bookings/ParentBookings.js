@@ -143,9 +143,9 @@ const ParentBookings = ({ navigation, tutorJobId }) => {
                   color="#1E90FF"
                   size={24}
                   onPress={() =>
-                    navigation.navigate("create", {
-                      mode: "edit",
-                      tutorJob: item,
+                    navigation.navigate("Stakess", {
+                      screen: "create",
+                      params: { mode: "edit", tutorJob: item },
                     })
                   }
                 />

@@ -6,7 +6,7 @@ const RequestDemoComponent = ({name,title, onDemoPress}) => {
     <View style={styles.container}>
       <Text style={styles.title}>Dear {name}</Text>
       <Text style={styles.subtitle}>You Have Not Requested Any Tutor</Text>
-      <TouchableOpacity style={styles.button} onPress={() => alert('Request a free demo class!')}>
+      <TouchableOpacity style={styles.button} onPress={onDemoPress}>
         <Text style={styles.buttonText}>{title}</Text>
       </TouchableOpacity>
       <Text style={styles.question}>

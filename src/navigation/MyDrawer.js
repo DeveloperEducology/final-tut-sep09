@@ -6,7 +6,7 @@ import CustomHeader from "../components/CustomHeader";
 import { Button, View } from "react-native";
 import CreateBooking from "../screens/Bookings/CreateBooking";
 import MyTabs from "./MyTabs";
-
+import ParentDetailForm from "../screens/ParentDetailForm/ParentDetailForm";
 
 const Drawer = createDrawerNavigator();
 function Article({ navigation }) {
@@ -22,17 +22,17 @@ function Article({ navigation }) {
 export default function MyDrawer() {
   return (
     <Drawer.Navigator>
-      <Drawer.Screen
-        name="HomeScreen"
-        component={HomeScreen}
-       
-      />
+      <Drawer.Screen name="Home" component={HomeScreen} />
       <Drawer.Screen
         name="Article"
         component={Article}
         options={{ headerShown: false }}
       />
-     
+      <Drawer.Screen
+        name="ParentDetailForm"
+        component={ParentDetailForm}
+        options={{ headerShown: false }}
+      />
     </Drawer.Navigator>
   );
 }

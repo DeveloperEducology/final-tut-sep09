@@ -22,12 +22,12 @@ import { Picker } from "@react-native-picker/picker";
 import { Modalize } from "react-native-modalize";
 import { useSelector } from "react-redux";
 import Toast from "react-native-toast-message";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Header2 from "../../components/Header2";
 import { Button } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import moment from "moment";
 import MultiSelectComponent from "../../components/MultiSelectComponent";
-import { Ionicons } from "@expo/vector-icons";
 
 if (
   Platform.OS === "android" &&
@@ -71,7 +71,7 @@ const CreateBooking = ({
   const [subjectsData, setSubjectsData] = useState([]);
   const [citiesData, setCitiesData] = useState([]);
   const [locationsData, setLocationsData] = useState([]);
-  const [boards, setBoards] = useState([]);
+  const [daysData, setDaysData] = useState([]);
 
   const [selectedSubjects, setSelectedSubjects] = useState([]);
   const [selectedDays, setSelectedDays] = useState([]);
@@ -82,8 +82,6 @@ const CreateBooking = ({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [area, setArea] = useState("");
   const [filterLocations, setFilterLocations] = useState(areas);
-
-  console.log(boards);
 
   useEffect(() => {
     // Simulate data fetching
@@ -173,7 +171,6 @@ const CreateBooking = ({
       daysPerWeek: "",
       salery: "",
       postedDate: formattedDate,
-      board: "",
     },
   });
   const [isDatePickerVisible, setIsDatePickerVisibility] = useState(false);
@@ -181,7 +178,8 @@ const CreateBooking = ({
   console.log(date);
 
   const modalRefs = useRef([]);
-
+  const [showDays, setShowDays] = useState(false);
+  const [showSubjects, setShowSubjects] = useState(false);
   const [filteredLocations, setFilteredLocations] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -204,7 +202,7 @@ const CreateBooking = ({
           setSubjectsData(data.subjects || []);
           setCitiesData(data.cities || []);
           setLocationsData(data.locations || []);
-          setBoards(data.boards || []);
+          setDaysData(data.days || []);
           setPincodes(data.pincodes || []);
           setAreas(data.areas || []);
           console.log(data.areas);
@@ -228,6 +226,7 @@ const CreateBooking = ({
       fetchUserData();
     }
   }, [tutorJobId]);
+  console.log("tutorJobId", tutorJobId);
 
   // Filter locations based on selected city
   useEffect(() => {
@@ -264,17 +263,14 @@ const CreateBooking = ({
         setValue("course", data.course);
         setValue("subjects", data.subjects);
         setSelectedSubjects(data.subjects);
-
         setValue("studentGender", data.studentGender);
         setValue("tutorGender", data.tutorGender);
         setValue("numStudents", data.numStudents);
         setValue("days", data.days);
         setSelectedDays(data.days);
-        setDate(data.tuitionDemoDate);
         setValue("salary", data.salary),
           setValue("otherRequirement", data.otherRequirement);
         setValue("daysPerWeek", data?.daysPerWeek);
-        setValue("board", data?.board);
       } else {
         const errorData = await response.json();
         Alert.alert("Error", errorData.message || "Failed to fetch booking");
@@ -323,17 +319,22 @@ const CreateBooking = ({
 
   const onSubmit = (data) => {
     let tuitionDemoDate = date;
-    const formData = {
-      ...data,
-      userId,
-      area,
-      tuitionDemoDate,
-      selectedSubjects,
-    };
+    const formData = { ...data, userId, area, tuitionDemoDate };
     submitBooking(formData);
   };
 
-  console.log(selectedSubjects);
+  const toggleDays = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setShowDays(!showDays);
+  };
+
+  const toggleSubjects = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setShowSubjects(!showSubjects);
+  };
+
+  const displayDays = showDays ? daysData : [];
+  const displaySubjects = showSubjects ? subjectsData : [];
 
   return (
     <ScrollView>
@@ -350,10 +351,10 @@ const CreateBooking = ({
           <View style={styles.values}>
             <MultiSelectComponent
               placeholder="Select Subjects"
-              value={selectedSubjects}
+              value={selected}
               data={subjectsData}
               onChange={(item) => {
-                setSelectedSubjects(item);
+                setSelected(item);
               }}
             />
           </View>
@@ -374,27 +375,6 @@ const CreateBooking = ({
                   <Picker.Item label="Home" value="home" />
                   <Picker.Item label="Group" value="group" />
                   <Picker.Item label="Institute" value="institute" />
-                </Picker>
-              )}
-            />
-          </View>
-          <View style={styles.values}>
-            <Controller
-              name="board"
-              style={{ backgroundColor: "#FFF" }}
-              control={control}
-              render={({ field: { onChange, value } }) => (
-                <Picker
-                  selectedValue={value}
-                  onValueChange={(itemValue) => onChange(itemValue)}
-                  style={{ marginBottom: 10 }}
-                >
-                  <Picker.Item label="Select Board" value="" />
-                  <Picker.Item label="CBSE" value="cbse" />
-                  <Picker.Item label="ICSE" value="icse" />
-                  <Picker.Item label="SSC" value="ssc" />
-                  <Picker.Item label="IGCSE" value="igcse" />
-                  <Picker.Item label="OTHER" value="other" />
                 </Picker>
               )}
             />
@@ -442,6 +422,45 @@ const CreateBooking = ({
                 </Picker>
               )}
             />
+          </View>
+          <View style={styles.values}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Select subjects</Text>
+              <TouchableOpacity onPress={toggleSubjects}>
+                <Text style={styles.viewAllText}>
+                  {showSubjects ? "Pick" : "View all"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            {showSubjects && (
+              <View>
+                {displaySubjects?.map((subject) => (
+                  <CheckBox
+                    key={subject._id}
+                    title={subject.name}
+                    checked={selectedSubjects?.includes(subject._id)}
+                    onPress={() => {
+                      if (selectedSubjects?.includes(subject._id)) {
+                        setSelectedSubjects((prev) =>
+                          prev.filter((id) => id !== subject._id)
+                        );
+                      } else {
+                        setSelectedSubjects((prev) => [...prev, subject._id]);
+                      }
+                      setValue("subjects", selectedSubjects);
+                    }}
+                  />
+                ))}
+              </View>
+            )}
+            {selectedSubjects.length > 0 && (
+              <Text>
+                {subjectsData
+                  .filter((sub) => selectedSubjects.includes(sub._id))
+                  .map((sub) => sub.name)
+                  .join(" ,")}
+              </Text>
+            )}
           </View>
 
           <View style={styles.values}>
@@ -566,7 +585,7 @@ const CreateBooking = ({
             />
           </View>
           <View style={styles.values}>
-            <View style={styles.dateInputContainer}>
+            <View style={styles.datePicker}>
               <Text style={styles.label}>Tuition demo Date</Text>
               {showDatePicker && (
                 <DateTimePicker
@@ -581,65 +600,73 @@ const CreateBooking = ({
                   }}
                 />
               )}
-              <Text>{moment(date).format("DD-MM-YYYY")}</Text>
-
               <Button onPress={() => setShowDatePicker(true)}>
-                <Ionicons
-                  name="calendar"
-                  size={24}
-                  color="black"
-                  style={styles.calendarIcon}
-                />
+                {" "}
+                {moment(date).format("DD-MM-YYYY")}
               </Button>
             </View>
           </View>
+          <View style={styles.values}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Select Days</Text>
+              <TouchableOpacity onPress={toggleDays}>
+                <Text style={styles.viewAllText}>
+                  {showDays ? "Pick" : "View all"}
+                </Text>
+              </TouchableOpacity>
+            </View>
 
+            {showDays && (
+              <View>
+                {displayDays?.map((day) => (
+                  <CheckBox
+                    key={day._id}
+                    title={day?.name}
+                    checked={selectedDays?.includes(day._id)}
+                    onPress={() => {
+                      if (selectedDays?.includes(day._id)) {
+                        setSelectedDays((prev) =>
+                          prev.filter((id) => id !== day._id)
+                        );
+                      } else {
+                        setSelectedDays((prev) => [...prev, day._id]);
+                      }
+                      setValue("days", selectedDays);
+                    }}
+                  />
+                ))}
+              </View>
+            )}
+            {selectedDays.length > 0 && (
+              <Text>
+                {daysData
+                  .filter((day) => selectedDays.includes(day._id))
+                  .map((day) => day.name)
+                  .join(" ,")}
+              </Text>
+            )}
+          </View>
           <View style={styles.values}>
-            <Controller
-              name="daysPerWeek"
-              control={control}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  placeholder="No of Days/week"
-                  style={styles.input}
-                  keyboardType="numeric"
-                  onChangeText={(text) => onChange(text)} // This updates the value in the form's state
-                  value={value} // The current value in the form state
-                  onBlur={onBlur} // This will trigger validation when the input loses focus
-                />
-              )}
+            <TextInput
+              placeholder="No of Days/week"
+              style={styles.input}
+              keyboardType="numeric"
+              onChangeText={(text) => setValue("daysPerWeek", text)}
             />
           </View>
           <View style={styles.values}>
-            <Controller
-              name="otherRequirement"
-              control={control}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  placeholder="other Requirement"
-                  style={styles.input}
-                  keyboardType="numeric"
-                  onChangeText={(text) => onChange(text)} // This updates the value in the form's state
-                  value={value} // The current value in the form state
-                  onBlur={onBlur} // This will trigger validation when the input loses focus
-                />
-              )}
+            <TextInput
+              placeholder="Other Requirement"
+              style={styles.input}
+              onChangeText={(text) => setValue("otherRequirement", text)}
             />
           </View>
           <View style={styles.values}>
-            <Controller
-              name="salary"
-              control={control}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  placeholder="salary"
-                  style={styles.input}
-                  keyboardType="numeric"
-                  onChangeText={(text) => onChange(text)} // This updates the value in the form's state
-                  value={value} // The current value in the form state
-                  onBlur={onBlur} // This will trigger validation when the input loses focus
-                />
-              )}
+            <TextInput
+              placeholder="Salary"
+              style={styles.input}
+              keyboardType="numeric"
+              onChangeText={(text) => setValue("salary", text)}
             />
           </View>
         </View>
@@ -672,14 +699,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginRight: 8,
     marginBottom: 8,
-  },
-  dateInputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  calendarIcon: {
-    marginLeft: 10,
   },
   values: {
     backgroundColor: "#FFF",

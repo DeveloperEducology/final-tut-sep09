@@ -28,7 +28,8 @@ import { useSelector } from "react-redux";
 import Toast from "react-native-toast-message";
 import { API_BASE_URL } from "../../config/urls";
 import CustomHeader from "../../components/CustomHeader";
-
+import DateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 // Booking data converted into an array
 
 const TutorJobs = ({ navigation, tutorJobId }) => {
@@ -50,12 +51,12 @@ const TutorJobs = ({ navigation, tutorJobId }) => {
   const [bookings, setBookings] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10); // Set the number of bookings per page
   const [totalBookings, setTotalBookings] = useState(0);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
-
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [date, setDate] = useState(new Date());
   useEffect(() => {
     fetchUserData();
   }, [userId, user?.token]); // Re-fetch data if userId or user.token changes
@@ -106,10 +107,23 @@ const TutorJobs = ({ navigation, tutorJobId }) => {
 
   const handleFormSuccess = () => {
     setModalVisible(false);
-    userPosts();
+    fetchUserData();
   };
 
-  console.log("edit data", editData);
+  
+  const formattedSelectedDate = moment(date)
+    .format("DD-MM-YYYY");
+
+  // Filter bookings based on postedDate
+  const filteredBookings = bookings.filter((booking) => {
+    const formattedPostedDate = moment(booking.postedDate.$date).format(
+      "DD-MM-YYYY"
+    );
+    return formattedPostedDate === formattedSelectedDate;
+  });
+
+  console.log("filteredBookings", filteredBookings.length);
+  console.log("bookings", bookings.length);
 
   const onOpenModal = () => {
     modalizeRef.current?.open();
@@ -145,12 +159,12 @@ const TutorJobs = ({ navigation, tutorJobId }) => {
             </View>
           </View>
           <Card.Divider />
-          <Text style={styles.info}>Category: {item.category.name}</Text>
+          <Text style={styles.info}>Category: {item?.category?.name}</Text>
           <Text style={styles.info}>
-            Subjects: {item.subjects.map((sub) => sub.name).join(", ")}
+            Subjects: {item.subjects.map((sub) => sub?.name).join(", ")}
           </Text>
-          <Text style={styles.info}>City: {item.city.name}</Text>
-          <Text style={styles.info}>Location: {item.location.name}</Text>
+          <Text style={styles.info}>City: {item.city?.name}</Text>
+          <Text style={styles.info}>Location: {item.location?.name}</Text>
           <Text style={styles.info}>Tuition Type: {item.tuitionType}</Text>
           <Text style={styles.info}>Student Gender: {item.studentGender}</Text>
           <Text style={styles.info}>Tutor Gender: {item.tutorGender}</Text>
@@ -211,6 +225,28 @@ const TutorJobs = ({ navigation, tutorJobId }) => {
             navigation.navigate("SearchScreen", { bookings: bookings })
           }
         />
+        <View style={styles.values}>
+          <View style={styles.datePicker}>
+            <Text style={styles.label}> demo Date</Text>
+            {showDatePicker && (
+              <DateTimePicker
+                value={date}
+                mode="date"
+                display="default"
+                onChange={(event, selectedDate) => {
+                  setShowDatePicker(false);
+                  if (selectedDate) {
+                    setDate(selectedDate);
+                  }
+                }}
+              />
+            )}
+            <Button onPress={() => setShowDatePicker(true)}>
+              {" "}
+              {moment(date).format("DD-MM-YYYY")}
+            </Button>
+          </View>
+        </View>
       </Animated.View>
 
       <FlatList

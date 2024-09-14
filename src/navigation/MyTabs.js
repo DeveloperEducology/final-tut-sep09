@@ -9,42 +9,16 @@ import ParentBookings from "../screens/Bookings/ParentBookings";
 import TutorJobs from "../screens/Bookings/TutorJobs";
 import ParentProfile from "../screens/Profiles/ParentProfile";
 import TutorProfile from "../screens/Profiles/TutorProfile";
-import MyDrawer from "./MyDrawer";
 import TutorSearchScreen from "../screens/TutorSearch/TutorSearchScreen";
 import BookamarkJobs from "../screens/BookMarkJobs/BookamarkJobs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import CreateBooking from "../screens/Bookings/CreateBooking";
 import CreateChapterBooking from "../screens/Bookings/CreateChapterBooking";
 import LocationInput from "../screens/Bookings/LocationInput";
-
+import HomeScreen from "../screens/Home/HomeScreen";
+import MyDrawer from "./MyDrawer";
 
 const Tab = createBottomTabNavigator();
-const FormStack = createNativeStackNavigator();
-
-function Stakess() {
-  const userData = useSelector((state) => state?.auth?.userData);
-  return (
-    <>
-      <FormStack.Navigator
-        screenOptions={{ headerShown: false }}
-        initialRouteName="Bookings"
-      >
-        <FormStack.Screen name="create" component={CreateBooking} />
-        <FormStack.Screen
-          name="create-chapter-booking"
-          component={CreateChapterBooking}
-        />
-        <FormStack.Screen
-          name="Bookings"
-          component={
-            userData?.userType === "student" ? ParentBookings : TutorJobs
-          }
-        />
-        {/* Add other screens here */}
-      </FormStack.Navigator>
-    </>
-  );
-}
 
 export default function MyTabs() {
   const userData = useSelector((state) => state?.auth?.userData);
@@ -57,12 +31,19 @@ export default function MyTabs() {
 
   const handleCreateTutorRequest = () => {
     modalizeRef.current?.close();
-    navigation.navigate("create", { mode: "new" });
+
+    navigation.navigate("Stakess", {
+      screen: "create",
+      params: { mode: "new" },
+    });
   };
 
   const handleCreateChapterExpert = () => {
     modalizeRef.current?.close();
-    navigation.navigate("create-chapter-booking", { mode: "new" });
+    navigation.navigate("Stakess", {
+      screen: "create-chapter-booking",
+      params: { mode: "new" },
+    });
   };
 
   return (
@@ -146,7 +127,9 @@ export default function MyTabs() {
         )}
         <Tab.Screen
           name="Bookings"
-          component={Stakess}
+          component={
+            userData?.userType === "student" ? ParentBookings : TutorJobs
+          }
           options={{ tabBarLabel: "", headerShown: false }}
         />
         {userData?.userType === "tutor" && (
@@ -156,11 +139,7 @@ export default function MyTabs() {
             options={{ tabBarLabel: "", headerShown: false }}
           />
         )}
-           <Tab.Screen
-            name="Bookmark"
-            component={LocationInput}
-            options={{ tabBarLabel: "", headerShown: false }}
-          />
+
         <Tab.Screen
           name="Profile"
           component={

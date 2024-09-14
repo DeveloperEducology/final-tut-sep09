@@ -13,11 +13,11 @@ import {
   Modal,
   TouchableWithoutFeedback,
   Animated,
+  Button,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Icon from "react-native-vector-icons/Ionicons";
 import Carousel from "react-native-reanimated-carousel";
-import { Button } from "react-native-paper";
 import { useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { saveUserData } from "../../redux/reducers/auth";
@@ -110,14 +110,9 @@ const HomeScreen = ({ navigation }) => {
         </TouchableOpacity>
       ),
       headerRight: () => (
-        <View style={{flexDirection: 'row', gap: 5}}>
-        <TouchableOpacity style={{ marginRight: 5 }}>
+        <TouchableOpacity style={{ marginRight: 15 }}>
           <Ionicons name="notifications-outline" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity style={{ marginRight: 15 }}>
-          <Button onPress={onLogout}>Log Out</Button>
-        </TouchableOpacity>
-        </View>
       ),
     });
   }, [navigation]);
@@ -213,9 +208,8 @@ const HomeScreen = ({ navigation }) => {
                 key={category._id}
                 style={styles.categoryButton}
                 onPress={() =>
-                  navigation.navigate("Stakess", {
-                    screen: "catwisetutors",
-                    params: { categoryId: category._id },
+                  navigation.navigate("catwisetutors", {
+                    categoryId: category._id,
                   })
                 }
               >
@@ -229,12 +223,7 @@ const HomeScreen = ({ navigation }) => {
           <RequestDemoComponent
             name={userData?.userName}
             title={"Request A Free Demo Class Now"}
-            onDemoPress={() =>
-              navigation.navigate("Stakess", {
-                screen: "create",
-                params: { mode: "new" },
-              })
-            }
+            onDemoPress={() => navigation.navigate("create", { mode: "new" })}
           />
         )}
 

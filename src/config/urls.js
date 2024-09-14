@@ -17,6 +17,7 @@ export const MY_POSTS = getApiURL("/myPosts");
 export const FILE_UPLOAD = getApiURL("/fileUpload");
 export const USER_DETAILS = getApiURL("/fetchUserDetails");
 export const FETCH_USERS_BY_IDS = getApiURL("/fetchUsersByIds");
+export const FETCH_PARENT_BY_ID = getApiURL("/parent-profile");
 
 
 // get collections
