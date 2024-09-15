@@ -311,7 +311,7 @@ const CreateProfile = ({ profile }) => {
             </View>
 
             <View style={styles.formGroup}>
-              <Text style={styles.label}>Select Student Gender *</Text>
+              <Text style={styles.label}>Select Gender *</Text>
               <Picker
                 selectedValue={gender}
                 style={styles.picker}
@@ -320,13 +320,12 @@ const CreateProfile = ({ profile }) => {
                 <Picker.Item label="Select Gender" value="" />
                 <Picker.Item label="Male" value="Male" />
                 <Picker.Item label="Female" value="Female" />
-                <Picker.Item label="Other" value="Other" />
               </Picker>
             </View>
           </ScrollView>
         </ProgressStep>
 
-        {/* Step 2: Address Information */}
+        {/* Step 2: Tuition Information */}
         <ProgressStep
           label="Tuition"
           onNext={handleNextStep}
@@ -463,10 +462,22 @@ const CreateProfile = ({ profile }) => {
           nextBtnText="Next"
           previousBtnText="Back"
         >
+         <ScrollView>
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>additional Number </Text>
+            <TextInput
+              style={styles.input}
+              value={additionalNumber}
+              onChangeText={setAdditionalNumber}
+              placeholder="Enter your additional number"
+              keyboardType="numaric"
+            />
+          </View>
+        </ScrollView>
           <Button onPress={handleSubmit}>submitButton</Button>
           {/* Personal & Emergency Information form goes here */}
         </ProgressStep>
-
+       
         {/* Step 4: Review and Submit */}
         <ProgressStep
           label="Review"
