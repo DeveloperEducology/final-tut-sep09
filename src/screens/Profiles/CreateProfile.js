@@ -46,23 +46,36 @@ const ProfileInfoSection = ({
   </View>
 );
 
-const CreateProfile = ({ profile, modalVisible }) => {
+const CreateProfile = ({ route, navigation, profile }) => {
+  // const { profile, mode } = route.params;
+  // const [formData, setFormData] = useState(profile);
   const userData = useSelector((state) => state?.auth?.userData);
-  const [firstName, setFirstName] = useState(profile?.firstName || "");
-  const [lastName, setLastName] = useState(profile?.lastName || "");
-  const [whatsAppNumber, setWhatsAppNumber] = useState(
-    profile?.whatsAppNumber || ""
+  const [firstName, setFirstName] = useState(
+    profile?.basicInfo?.firstName || ""
   );
-  const [email, setEmail] = useState(profile?.email || "");
-  const [gender, setGender] = useState(profile?.gender || "");
-  const [date, setDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedSubjects, setSelectedSubjects] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState([]);
-  const [selectedClass, setSelectedClass] = useState([]);
-  const [myCity, setMyCity] = useState(null);
-  const [myLocation, setMyLocation] = useState(null);
+  const [lastName, setLastName] = useState(profile?.basicInfo?.lastName || "");
+  const [whatsAppNumber, setWhatsAppNumber] = useState(
+    profile?.basicInfo?.whatsAppNumber || ""
+  );
 
+  const [gender, setGender] = useState(profile?.basicInfo?.gender || "");
+  const [date, setDate] = useState(profile?.basicInfo?.date || new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [selectedSubjects, setSelectedSubjects] = useState(
+    profile?.otherInfo?.preferredSubjects || []
+  );
+  const [selectedCategory, setSelectedCategory] = useState(
+    profile?.otherInfo?.preferredCategories || []
+  );
+  const [selectedClass, setSelectedClass] = useState(
+    profile?.otherInfo?.preferredClasses || []
+  );
+  const [myCity, setMyCity] = useState(profile?.otherInfo?.city || null);
+  const [myLocation, setMyLocation] = useState(
+    profile?.otherInfo?.location || null
+  );
+
+  // console.log("profile data in tutor profile create/edit page", formData);
   useEffect(() => {
     getCollections();
   }, []);
@@ -141,47 +154,45 @@ const CreateProfile = ({ profile, modalVisible }) => {
     setAddress((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Validation before proceeding to next step
+  const validateStep = () => {
+    switch (activeStep) {
+      case 0:
+        if (!firstName) return "Please enter your first name.";
+        if (!lastName) return "Please enter your last name.";
+        if (!whatsAppNumber) return "Please enter your WhatsApp number.";
+   
+        if (!gender) return "Please select your gender.";
+        return null;
+      default:
+        return null;
+    }
+  };
 
-    // Validation before proceeding to next step
-    const validateStep = () => {
-      switch (activeStep) {
-        case 0:
-          if (!firstName) return "Please enter your first name.";
-          if (!lastName) return "Please enter your last name.";
-          if (!whatsAppNumber) return "Please enter your WhatsApp number.";
-          if (!email) return "Please enter your email address.";
-          if (!gender) return "Please select your gender.";
-          return null;
-        default:
-          return null;
-      }
-    };
-  
-    const teachModes = [
-      {
-        _id: "1",
-        name: "online",
-      },
-      {
-        _id: "2",
-        name: "offline",
-      },
-      {
-        _id: "3",
-        name: "home",
-      },
-      {
-        _id: "4",
-        name: "institute",
-      },
-      {
-        _id: "5",
-        name: "School/college",
-      },
-    ];
-  
+  const teachModes = [
+    {
+      _id: "1",
+      name: "online",
+    },
+    {
+      _id: "2",
+      name: "offline",
+    },
+    {
+      _id: "3",
+      name: "home",
+    },
+    {
+      _id: "4",
+      name: "institute",
+    },
+    {
+      _id: "5",
+      name: "School/college",
+    },
+  ];
+
   const [activeStep, setActiveStep] = useState(0);
-
 
   const handlePreviousStep = () => {
     if (activeStep > 0) setActiveStep((prev) => prev - 1);
@@ -247,7 +258,6 @@ const CreateProfile = ({ profile, modalVisible }) => {
       basicInfo: {
         firstName: firstName,
         lastName: lastName,
-        email: email,
         gender: gender,
         whatsAppNumber: whatsAppNumber,
         dateOfBirth: date,
@@ -260,9 +270,9 @@ const CreateProfile = ({ profile, modalVisible }) => {
         location: myLocation,
         city: myCity,
       },
-      // address,
-      // personalInformation,
-      // emergencyInformation,
+      address,
+      personalInformation,
+      emergencyInformation,
     };
 
     try {
@@ -340,16 +350,7 @@ const CreateProfile = ({ profile, modalVisible }) => {
               />
             </View>
 
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Email Address *</Text>
-              <TextInput
-                style={styles.input}
-                value={email}
-                onChangeText={setEmail}
-                placeholder="Enter your email address"
-                keyboardType="email-address"
-              />
-            </View>
+            
 
             <View style={styles.formGroup}>
               <Text style={styles.label}>Date of Birth *</Text>
