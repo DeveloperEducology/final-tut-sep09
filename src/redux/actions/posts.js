@@ -4,7 +4,8 @@ import {
   LIKE_DISLIKE,
   MY_POSTS,
   GET_COLLECTIONS,
-  FETCH_PARENT_BY_ID
+  FETCH_PARENT_BY_ID,
+  FETCH_TUTOR_BY_ID
 } from "../../config/urls";
 import { apiGet, apiPost } from "../../utils/utils";
 import store from "../store";
@@ -22,6 +23,9 @@ export const getMyPosts = (query = "") => {
 };
 export const getParentProfile = (query = "") => {
   return apiGet(FETCH_PARENT_BY_ID + query);
+};
+export const getTutorProfile = (query = "") => {
+  return apiGet(FETCH_TUTOR_BY_ID + query);
 };
 
 

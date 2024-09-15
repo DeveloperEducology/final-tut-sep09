@@ -16,7 +16,7 @@ const { dispatch } = store;
 
 export default function App() {
   React.useEffect(() => {
-    // initUser();
+    initUser();
   }, []);
 
   const initUser = async () => {

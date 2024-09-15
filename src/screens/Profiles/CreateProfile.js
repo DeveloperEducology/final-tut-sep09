@@ -22,14 +22,38 @@ import SingleSelectDropdown from "../../components/SingleSelectDropdown";
 import { useSelector } from "react-redux";
 import { Button } from "react-native-paper";
 
-const CreateProfile = ({ profile }) => {
+const ProfileInfoSection = ({
+  title,
+  information,
+  handleChange,
+  editableField,
+  handleEdit,
+}) => (
+  <View style={styles.formGroup}>
+    <Text style={styles.sectionTitle}>{title}</Text>
+    {Object.keys(information).map((field, index) => (
+      <View>
+        <Text style={styles.label}>
+          {field.charAt(0).toUpperCase() + field.slice(1)}
+        </Text>
+        <TextInput
+          style={styles.input}
+          value={information[field]}
+          onChangeText={(text) => handleChange(field, text)}
+        />
+      </View>
+    ))}
+  </View>
+);
+
+const CreateProfile = ({ profile, modalVisible }) => {
   const userData = useSelector((state) => state?.auth?.userData);
-  const [firstName, setFirstName] = useState(profile?.firstName || "vijay");
-  const [lastName, setLastName] = useState(profile?.lastName || "marka");
+  const [firstName, setFirstName] = useState(profile?.firstName || "");
+  const [lastName, setLastName] = useState(profile?.lastName || "");
   const [whatsAppNumber, setWhatsAppNumber] = useState(
-    profile?.whatsAppNumber || "446464654"
+    profile?.whatsAppNumber || ""
   );
-  const [email, setEmail] = useState(profile?.email || "vjy@gmail.com");
+  const [email, setEmail] = useState(profile?.email || "");
   const [gender, setGender] = useState(profile?.gender || "");
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -38,20 +62,6 @@ const CreateProfile = ({ profile }) => {
   const [selectedClass, setSelectedClass] = useState([]);
   const [myCity, setMyCity] = useState(null);
   const [myLocation, setMyLocation] = useState(null);
-
-  const [preferPincodes, setPreferPincodes] = useState([]);
-  const [selectMode, setSelectMode] = useState([]);
-  const [categoriesData, setCategoriesData] = useState([]);
-  const [classesData, setClassesData] = useState([]);
-  const [subjectsData, setSubjectsData] = useState([]);
-  const [citiesData, setCitiesData] = useState([]);
-  const [locationsData, setLocationsData] = useState([]);
-  const [boards, setBoards] = useState([]);
-  const [pincodeData, setPincodeData] = useState([]);
-  const [areas, setAreas] = useState([]);
-  const [query, setQuery] = useState("");
-  const [locations, setLocations] = useState(pincodeData);
-  const [filterLocations, setFilterLocations] = useState([]);
 
   useEffect(() => {
     getCollections();
@@ -74,23 +84,108 @@ const CreateProfile = ({ profile }) => {
     }
   };
 
-  const [activeStep, setActiveStep] = useState(0);
+  const [preferPincodes, setPreferPincodes] = useState([]);
+  const [selectMode, setSelectMode] = useState([]);
+  const [categoriesData, setCategoriesData] = useState([]);
+  const [classesData, setClassesData] = useState([]);
+  const [subjectsData, setSubjectsData] = useState([]);
+  const [citiesData, setCitiesData] = useState([]);
+  const [locationsData, setLocationsData] = useState([]);
+  const [boards, setBoards] = useState([]);
+  const [pincodeData, setPincodeData] = useState([]);
+  const [areas, setAreas] = useState([]);
+  const [query, setQuery] = useState("");
+  const [locations, setLocations] = useState(pincodeData);
+  const [filterLocations, setFilterLocations] = useState([]);
 
-  // Validation before proceeding to next step
-  const validateStep = () => {
-    switch (activeStep) {
-      case 0:
-        if (!firstName) return "Please enter your first name.";
-        if (!lastName) return "Please enter your last name.";
-        if (!whatsAppNumber) return "Please enter your WhatsApp number.";
-        if (!email) return "Please enter your email address.";
-        if (!gender) return "Please select your gender.";
-        return null;
-      default:
-        return null;
-    }
+  // Personal Information
+  const [personalInformation, setPersonalInformation] = useState({
+    additionalNumber: "54554",
+    gender: "male",
+    dateOfBirth: "12-12-12",
+    religion: "hind",
+    nationality: "indian",
+    fathersName: "san",
+    fathersNumber: "55454654",
+    mothersName: "pad",
+    mothersNumber: "5545",
+    overview: "fdfdsfd",
+  });
+
+  // Emergency Information
+  const [emergencyInformation, setEmergencyInformation] = useState({
+    name: "shiva",
+    number: "0000",
+    relation: "god",
+    address: "kailasam",
+  });
+
+  // Address Information
+  const [address, setAddress] = useState({
+    street: "road nno 4",
+    city: "Hyderabad",
+    state: "Telagnana",
+    postalCode: "500063",
+    country: "India",
+  });
+
+  const handlePersonalInfoChange = (field, value) => {
+    setPersonalInformation((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleEmergencyInfoChange = (field, value) => {
+    setEmergencyInformation((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleAddressChange = (field, value) => {
+    setAddress((prev) => ({ ...prev, [field]: value }));
+  };
+
+
+    // Validation before proceeding to next step
+    const validateStep = () => {
+      switch (activeStep) {
+        case 0:
+          if (!firstName) return "Please enter your first name.";
+          if (!lastName) return "Please enter your last name.";
+          if (!whatsAppNumber) return "Please enter your WhatsApp number.";
+          if (!email) return "Please enter your email address.";
+          if (!gender) return "Please select your gender.";
+          return null;
+        default:
+          return null;
+      }
+    };
+  
+    const teachModes = [
+      {
+        _id: "1",
+        name: "online",
+      },
+      {
+        _id: "2",
+        name: "offline",
+      },
+      {
+        _id: "3",
+        name: "home",
+      },
+      {
+        _id: "4",
+        name: "institute",
+      },
+      {
+        _id: "5",
+        name: "School/college",
+      },
+    ];
+  
+  const [activeStep, setActiveStep] = useState(0);
+
+
+  const handlePreviousStep = () => {
+    if (activeStep > 0) setActiveStep((prev) => prev - 1);
+  };
   // Handlers for step navigation
   const handleNextStep = () => {
     const error = validateStep();
@@ -103,33 +198,6 @@ const CreateProfile = ({ profile }) => {
       return;
     }
     setActiveStep((prev) => prev + 1);
-  };
-
-  const teachModes = [
-    {
-      _id: "1",
-      name: "online",
-    },
-    {
-      _id: "2",
-      name: "offline",
-    },
-    {
-      _id: "3",
-      name: "home",
-    },
-    {
-      _id: "4",
-      name: "institute",
-    },
-    {
-      _id: "5",
-      name: "School/college",
-    },
-  ];
-
-  const handlePreviousStep = () => {
-    if (activeStep > 0) setActiveStep((prev) => prev - 1);
   };
 
   // Filter locations based on selected city
@@ -237,6 +305,7 @@ const CreateProfile = ({ profile }) => {
           onPrevious={handlePreviousStep}
           nextBtnText="Next"
           previousBtnText="Back"
+          isFirstStep
         >
           <ScrollView contentContainerStyle={styles.scrollViewContainer}>
             <Text style={styles.header}>General Details</Text>
@@ -402,9 +471,7 @@ const CreateProfile = ({ profile }) => {
                 ))}
               </Picker>
             </View>
-            <View style={styles.formGroup}>
-              <SingleSelectDropdown data={pincodeData} />
-            </View>
+
             <View style={styles.formGroup}>
               <MultiSelectComponent
                 placeholder="select prefer locations"
@@ -455,6 +522,7 @@ const CreateProfile = ({ profile }) => {
         </ProgressStep>
 
         {/* Step 3: Personal & Emergency Information */}
+
         <ProgressStep
           label="Personal Info"
           onNext={handleNextStep}
@@ -462,22 +530,25 @@ const CreateProfile = ({ profile }) => {
           nextBtnText="Next"
           previousBtnText="Back"
         >
-         <ScrollView>
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>additional Number </Text>
-            <TextInput
-              style={styles.input}
-              value={additionalNumber}
-              onChangeText={setAdditionalNumber}
-              placeholder="Enter your additional number"
-              keyboardType="numaric"
+          <ScrollView>
+            <ProfileInfoSection
+              title="Personal Information"
+              information={personalInformation}
+              handleChange={handlePersonalInfoChange}
             />
-          </View>
-        </ScrollView>
-          <Button onPress={handleSubmit}>submitButton</Button>
-          {/* Personal & Emergency Information form goes here */}
+            <ProfileInfoSection
+              title="Emergency Information"
+              information={emergencyInformation}
+              handleChange={handleEmergencyInfoChange}
+            />
+            <ProfileInfoSection
+              title="Address Information"
+              information={address}
+              handleChange={handleAddressChange}
+            />
+          </ScrollView>
         </ProgressStep>
-       
+
         {/* Step 4: Review and Submit */}
         <ProgressStep
           label="Review"
@@ -485,8 +556,10 @@ const CreateProfile = ({ profile }) => {
           finishBtnText="Submit"
           onSubmit={handleSubmit}
           previousBtnText="Back"
+          isLastStep
         >
           {/* Review and Submit form goes here */}
+          <Button onPress={handleSubmit}>submitButton</Button>
         </ProgressStep>
       </ProgressSteps>
     </View>
@@ -546,6 +619,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ddd",
   },
+  sectionTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 10 },
 });
 
 export default CreateProfile;

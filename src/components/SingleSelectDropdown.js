@@ -23,7 +23,7 @@ const emojisWithIcons = [
 const SingleSelectDropdown = ({ data }) => {
   return (
     <SelectDropdown
-      data={data}
+      data={emojisWithIcons}
       onSelect={(selectedItem, index) => {
         console.log(selectedItem, index);
       }}
